@@ -1,15 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { ArrowLeft, TrendingDown, PackageSearch, Scale, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { formatCurrency } from "@/lib/currency";
 
 // Philosophy note included via UI
-export default function DetailedReport({ params }: { params: { id: string } }) {
+export default function DetailedReport({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const locationId = resolvedParams.id;
   const [data, setData] = useState<any>(null);
-  const locationId = params.id;
 
   useEffect(() => {
     // In a live integration, we fetch from /api/inventory/{locationId}/variance
@@ -79,7 +81,7 @@ export default function DetailedReport({ params }: { params: { id: string } }) {
             </div>
             <div className="glass-card p-5">
               <p className="text-xs text-muted-foreground font-medium uppercase">Financial Bleed</p>
-              <h4 className="text-2xl font-bold text-destructive mt-1">${Math.abs(data.varianceCost).toFixed(2)}</h4>
+              <h4 className="text-2xl font-bold text-destructive mt-1">{formatCurrency(Math.abs(data.varianceCost))}</h4>
             </div>
           </div>
 
@@ -112,7 +114,7 @@ export default function DetailedReport({ params }: { params: { id: string } }) {
                       ) : (
                         <div className="flex flex-col items-end">
                           <span className="text-sm font-bold text-destructive">{item.diff} units</span>
-                          <span className="text-xs text-muted-foreground mt-0.5">${Math.abs(item.cost).toFixed(2)} loss</span>
+                          <span className="text-xs text-muted-foreground mt-0.5">{formatCurrency(Math.abs(item.cost))} loss</span>
                         </div>
                       )}
                     </td>

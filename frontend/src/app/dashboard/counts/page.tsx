@@ -1,8 +1,9 @@
 "use client";
 
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PlusCircle, Search, ClipboardList, X } from "lucide-react";
-import { useState } from "react";
+import { PlusCircle, Search, ClipboardList, X, AlertCircle } from "lucide-react";
+import Link from "next/link";
 
 const mockCounts = [
   { id: "cnt-2025-10-01", date: "Oct 1, 2024", location: "Downtown", status: "submitted", variances: 3, owner: "manager1" },
@@ -13,6 +14,7 @@ const mockCounts = [
 export default function PhysicalCountsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [expandedCountId, setExpandedCountId] = useState<string | null>(null);
   const [countForm, setCountForm] = useState([
     { id: "ing:chicken-breast", name: "Chicken Breast", actual: 0, exp: 42.5 },
     { id: "ing:pizza-dough", name: "Pizza Dough Ball", actual: 0, exp: 15 },
@@ -111,39 +113,81 @@ export default function PhysicalCountsPage() {
                 <th className="px-6 py-4 font-medium">Date</th>
                 <th className="px-6 py-4 font-medium">Location</th>
                 <th className="px-6 py-4 font-medium">Owner</th>
-                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium text-center">Status</th>
                 <th className="px-6 py-4 font-medium text-right">Variances</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {mockCounts.map((count, idx) => (
-                <motion.tr 
-                  key={count.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: idx * 0.05 }}
-                  className="hover:bg-white/[0.02] transition-colors cursor-pointer group"
-                >
-                  <td className="px-6 py-4 font-medium text-foreground">{count.id}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{count.date}</td>
-                  <td className="px-6 py-4 text-foreground">{count.location}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{count.owner}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${
-                      count.status === 'approved' ? 'bg-green-400/10 text-green-400 border-green-400/20' :
-                      count.status === 'submitted' ? 'bg-primary/10 text-primary border-primary/20' :
-                      'bg-white/5 text-muted-foreground border-white/10'
-                    }`}>
-                      {count.status.toUpperCase()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right font-mono">
-                    <span className={count.variances > 0 ? 'text-amber-500' : 'text-green-400'}>
-                      {count.variances}
-                    </span>
-                  </td>
-                </motion.tr>
-              ))}
+              {mockCounts.map((count, idx) => {
+                const hasVariance = count.variances > 0;
+                
+                return (
+                  <React.Fragment key={count.id}>
+                    <motion.tr 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      onClick={() => setExpandedCountId(expandedCountId === count.id ? null : count.id)}
+                      className="hover:bg-white/[0.02] transition-colors cursor-pointer group"
+                    >
+                      <td className="px-6 py-4 font-medium text-foreground border-b-0 flex items-center gap-2">
+                        {count.id} {hasVariance && <AlertCircle className="w-3.5 h-3.5 text-amber-500" />}
+                      </td>
+                      <td className="px-6 py-4 text-muted-foreground border-b-0">{count.date}</td>
+                      <td className="px-6 py-4 text-foreground border-b-0">{count.location}</td>
+                      <td className="px-6 py-4 text-muted-foreground border-b-0">{count.owner}</td>
+                      <td className="px-6 py-4 border-b-0 text-center">
+                        <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider border ${
+                          count.status === 'approved' ? 'bg-green-400/10 text-green-400 border-green-400/20' :
+                          count.status === 'submitted' ? 'bg-primary/10 text-primary border-primary/20' :
+                          'bg-white/5 text-muted-foreground border-white/10'
+                        }`}>
+                          {count.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right font-mono border-b-0">
+                        <span className={hasVariance ? 'text-amber-500 font-bold' : 'text-green-400'}>
+                          {count.variances}
+                        </span>
+                      </td>
+                    </motion.tr>
+                    
+                    <AnimatePresence>
+                      {expandedCountId === count.id && hasVariance && (
+                        <motion.tr 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="bg-black/40 border-t border-b border-white/5"
+                        >
+                          <td colSpan={6} className="p-0">
+                            <div className="p-6 mx-4 my-2 border-l-2 border-amber-500/50 bg-amber-500/5 rounded-r-lg">
+                              <h4 className="text-sm font-bold text-amber-500 flex items-center gap-2 mb-3">
+                                <AlertCircle className="w-4 h-4" /> Variance Resolution Required
+                              </h4>
+                              <p className="text-xs text-muted-foreground mb-4 max-w-3xl leading-relaxed">
+                                The system identified differences between <strong>theoretical calculated ledger data</strong> and your <strong>physical counts</strong>. This variance causes financial drift. You must either double-check your count for errors (re-count) OR permanently accept the shrinkage to sync the ledger logic.
+                              </p>
+                              
+                              <div className="flex gap-4">
+                                <button className="bg-amber-500 text-black px-4 py-2 rounded-lg text-xs font-bold hover:bg-amber-400 transition-colors shadow">
+                                  Request Re-count Task
+                                </button>
+                                <button className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-foreground px-4 py-2 rounded-lg text-xs font-medium transition-colors">
+                                  Accept & Write Shrinkage Event
+                                </button>
+                                <Link href="/dashboard/reports" className="ml-auto flex items-center">
+                                  <button className="text-primary hover:text-primary-foreground text-xs font-medium underline underline-offset-4">Read Variance Report</button>
+                                </Link>
+                              </div>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      )}
+                    </AnimatePresence>
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>

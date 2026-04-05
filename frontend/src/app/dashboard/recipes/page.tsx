@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import { PlusCircle, UploadCloud, Edit3, BookOpen } from "lucide-react";
 import { useState } from "react";
+import { formatCurrency } from "@/lib/currency";
 
 export default function RecipesPage() {
+  const [isImporting, setIsImporting] = useState(false);
   const [recipes, setRecipes] = useState([
     { id: "rec:margherita-pizza", name: "Margherita Pizza", cost: 2.15, price: 16.00, ingredients: 4 },
     { id: "rec:spaghetti-carbonara", name: "Spaghetti Carbonara", cost: 4.80, price: 18.50, ingredients: 6 },
@@ -22,8 +24,13 @@ export default function RecipesPage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 bg-white/5 border border-white/10 text-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-white/10 transition-colors">
-            <UploadCloud className="w-4 h-4" /> Import Recipes (CSV)
+          <button 
+           onClick={() => {
+             setIsImporting(true);
+             setTimeout(() => { setIsImporting(false); alert("Corporate Recipes Sync: 43 New Recipes Ingested into Ledger."); }, 1500)
+           }}
+           className="flex items-center gap-2 bg-white/5 border border-white/10 text-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-white/10 transition-colors">
+            {isImporting ? <div className="w-4 h-4 rounded-full animate-spin border-2 border-t-transparent border-white" /> : <UploadCloud className="w-4 h-4" />} Import Recipes (CSV)
           </button>
           <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
             <PlusCircle className="w-4 h-4" /> Manual Setup
@@ -53,11 +60,11 @@ export default function RecipesPage() {
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Plated Cost</span>
-                <span className="font-mono text-amber-500">${rec.cost.toFixed(2)}</span>
+                <span className="font-mono text-amber-500">{formatCurrency(rec.cost)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Retail Price</span>
-                <span className="font-mono text-green-400">${rec.price.toFixed(2)}</span>
+                <span className="font-mono text-green-400">{formatCurrency(rec.price)}</span>
               </div>
               <div className="flex justify-between items-center text-sm pt-2">
                 <span className="text-muted-foreground">Gross Margin</span>
