@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp, AlertTriangle, ArrowUpRight, DollarSign, RefreshCw } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import Link from "next/link";
 
 const varianceData = [
   { date: 'Oct 1', midline: 0, variance: -12.5 },
@@ -109,9 +110,11 @@ export default function DashboardHome() {
             <LocationRow name="The Brass Tap Midtown" value="-4.1%" status="warning" />
             <LocationRow name="The Brass Tap R-side" value="-8.5%" status="danger" />
           </div>
-          <button className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-foreground transition-colors mt-auto">
-            View Detail Report
-          </button>
+          <Link href="/dashboard/reports" className="w-full">
+            <button className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-foreground transition-colors mt-auto border border-white/5">
+              View Detail Report
+            </button>
+          </Link>
         </motion.div>
       </div>
     </div>

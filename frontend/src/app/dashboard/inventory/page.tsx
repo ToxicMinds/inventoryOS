@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Search, Filter, AlertCircle, ArrowDown, ArrowUp } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import Link from "next/link";
 
 const mockInventory = [
   { id: "ing:chicken-breast", name: "Chicken Breast", category: "Protein", qty: 42.5, unit: "lb", value: 146.62, status: "ok" },
@@ -96,9 +98,11 @@ export default function InventoryPage() {
                     {item.status === 'critical' && <span className="flex items-center gap-1.5 text-xs text-destructive"><AlertCircle className="w-3.5 h-3.5" /> Critical Level</span>}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-primary hover:text-primary-foreground text-xs font-medium transition-colors opacity-0 group-hover:opacity-100">
-                      View Ledger
-                    </button>
+                    <Link href="/dashboard/inventory/ledger">
+                      <button className="text-primary hover:text-primary-foreground text-xs font-medium transition-colors opacity-0 group-hover:opacity-100">
+                        View Ledger
+                      </button>
+                    </Link>
                   </td>
                 </motion.tr>
               ))}

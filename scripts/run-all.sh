@@ -13,21 +13,11 @@ fuser -k 3005/tcp || true
 fuser -k 8085/tcp || true
 sleep 2
 
-echo "Starting PostgreSQL database container on port 5433..."
-docker compose up -d postgres
+echo "Starting DynamoDB Local (+ Admin UI) on ports 8000/8086..."
+docker compose up -d dynamodb-local dynamodb-admin
 
-echo "Waiting for postgres to be ready..."
+echo "Waiting for DynamoDB Local to be ready..."
 sleep 5
-docker exec -it inventoryos-db pg_isready -U inventoryos
-
-echo "Applying Database Schema..."
-docker exec -i inventoryos-db psql -U inventoryos -d inventoryos < ./backend/src/main/resources/db/migration/V1__Initial_schema.sql
-
-echo "Seeding initial mock data into database..."
-docker exec -i inventoryos-db psql -U inventoryos -d inventoryos < ./database/seeds/001_greenfield_restaurant.sql
-docker exec -i inventoryos-db psql -U inventoryos -d inventoryos < ./database/seeds/002_brownfield_restaurant.sql
-
-echo "Mock data seeded successfully!"
 
 echo "Starting Frontend cleanly on port 3005..."
 cd "/home/nik/Inventory OS/frontend"

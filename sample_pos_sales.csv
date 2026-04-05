@@ -1,0 +1,11 @@
+Transaction ID,Timestamp,Location ID,Recipe ID,Item Name,Quantity Sold,Total Value
+POS-4E956153,2026-04-05 22:28:31,downtown,rec:spaghetti-carbonara,Spaghetti Carbonara,2,37.0
+POS-C784545C,2026-04-05 22:28:31,downtown,rec:spaghetti-carbonara,Spaghetti Carbonara,3,55.5
+POS-4D60385F,2026-04-05 22:28:31,downtown,rec:house-wine-glass,House Red Wine,1,11.0
+POS-3FD5F1C1,2026-04-05 22:28:31,downtown,rec:tiramisu,Classic Tiramisu,4,36.0
+POS-71CE70BB,2026-04-05 22:28:31,downtown,rec:margherita-pizza,Margherita Pizza,1,16.0
+POS-C4C1A31B,2026-04-05 22:28:31,downtown,rec:margherita-pizza,Margherita Pizza,2,32.0
+POS-CB45262D,2026-04-05 22:28:31,downtown,rec:house-wine-glass,House Red Wine,2,22.0
+POS-FB99A8B9,2026-04-05 22:28:31,downtown,rec:margherita-pizza,Margherita Pizza,1,16.0
+POS-C256DC0A,2026-04-05 22:28:31,downtown,rec:spaghetti-carbonara,Spaghetti Carbonara,1,18.5
+POS-1589D17F,2026-04-05 22:28:31,downtown,rec:tiramisu,Classic Tiramisu,3,27.0

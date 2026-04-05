@@ -7,7 +7,6 @@ import com.inventoryos.shared.IdempotencyGuard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class LedgerOrchestratorService implements ProcessInventoryEventUseCase {
     private final IdempotencyGuard idempotencyGuard;
 
     @Override
-    @Transactional
     public void processEvent(String idempotencyKey, String locationId, String actorId, String eventType, Map<String, Object> payload) {
         
         // 1. Ensure idempotency (optimistic concurrency)

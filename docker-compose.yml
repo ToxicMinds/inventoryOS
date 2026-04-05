@@ -1,21 +1,17 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: inventoryos-db
-    environment:
-      POSTGRES_DB: inventoryos
-      POSTGRES_USER: inventoryos
-      POSTGRES_PASSWORD: inventoryos_dev
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    container_name: inventoryos-dynamodb
     ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/migrations:/docker-entrypoint-initdb.d/migrations:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U inventoryos"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -inMemory -sharedDb"
 
-volumes:
-  postgres_data:
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    container_name: inventoryos-dynamodb-admin
+    ports:
+      - "8086:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+    depends_on:
+      - dynamodb-local

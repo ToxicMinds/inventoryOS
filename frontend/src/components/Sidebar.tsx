@@ -33,13 +33,15 @@ export function Sidebar() {
   return (
     <div className="flex flex-col h-full w-64 glass border-r border-white/5 bg-[#09090b]/60">
       <div className="p-6 flex items-center gap-3">
-        <div className="bg-primary/20 p-2 rounded-xl text-primary">
-          <Store className="w-6 h-6" />
-        </div>
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-foreground">InventoryOS</h1>
-          <p className="text-xs text-muted-foreground">Enterprise Control</p>
-        </div>
+        <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer">
+          <div className="bg-primary/20 p-2 rounded-xl text-primary">
+            <Store className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-foreground transition-colors hover:text-primary">InventoryOS</h1>
+            <p className="text-xs text-muted-foreground">Enterprise Control</p>
+          </div>
+        </Link>
       </div>
 
       <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">

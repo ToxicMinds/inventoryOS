@@ -1,20 +1,55 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { PlusCircle, Search, ClipboardList } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PlusCircle, Search, ClipboardList, X } from "lucide-react";
 import { useState } from "react";
 
 const mockCounts = [
-  { id: "cnt-2025-10-01", date: "Oct 1, 2024", location: "Midtown", status: "submitted", variances: 3, owner: "manager1" },
-  { id: "cnt-2025-10-08", date: "Oct 8, 2024", location: "Riverside", status: "draft", variances: 0, owner: "manager2" },
-  { id: "cnt-2025-10-15", date: "Oct 15, 2024", location: "Downtown", status: "approved", variances: 1, owner: "owner1" },
+  { id: "cnt-2025-10-01", date: "Oct 1, 2024", location: "Downtown", status: "submitted", variances: 3, owner: "manager1" },
+  { id: "cnt-2025-10-08", date: "Oct 8, 2024", location: "Westside", status: "draft", variances: 0, owner: "manager2" },
+  { id: "cnt-2025-10-15", date: "Oct 15, 2024", location: "Midtown", status: "approved", variances: 1, owner: "owner1" },
 ];
 
 export default function PhysicalCountsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [countForm, setCountForm] = useState([
+    { id: "ing:chicken-breast", name: "Chicken Breast", actual: 0, exp: 42.5 },
+    { id: "ing:pizza-dough", name: "Pizza Dough Ball", actual: 0, exp: 15 },
+    { id: "ing:keg-ipa", name: "Local IPA Keg", actual: 0, exp: 2.1 }
+  ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    
+    // Formatting the payload to match DynamoDB expectation
+    const payload = {
+      eventType: "InventoryCountSubmitted",
+      payload: { items: countForm.map(c => ({ id: c.id, quantity: c.actual })) }
+    };
+    
+    try {
+      const res = await fetch('http://localhost:8080/api/locations/downtown/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Idempotency-Key': 'cnt-' + Date.now(),
+          'X-Actor-Id': 'frontend-user'
+        },
+        body: JSON.stringify(payload)
+      });
+      // Accept response without blocking UX
+    } catch(e) { console.error("Event failed to reach store", e); }
+    
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsModalOpen(false);
+    }, 1000);
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Physical Counts</h1>
@@ -22,7 +57,9 @@ export default function PhysicalCountsPage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(245,158,11,0.3)]">
             <PlusCircle className="w-4 h-4" /> New Count
           </button>
         </div>
@@ -100,8 +137,8 @@ export default function PhysicalCountsPage() {
                       {count.status.toUpperCase()}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className={`font-mono ${count.variances > 0 ? 'text-amber-500' : 'text-green-400'}`}>
+                  <td className="px-6 py-4 text-right font-mono">
+                    <span className={count.variances > 0 ? 'text-amber-500' : 'text-green-400'}>
                       {count.variances}
                     </span>
                   </td>
@@ -111,6 +148,72 @@ export default function PhysicalCountsPage() {
           </table>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#09090b] border border-white/10 rounded-2xl p-6 w-full max-w-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">Record Physical Count</h2>
+                  <p className="text-sm text-muted-foreground font-mono mt-1">Loc: Bella Cucina Downtown</p>
+                </div>
+                <button onClick={() => setIsModalOpen(false)} className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors">
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
+
+              <div className="overflow-y-auto py-4 flex-1 space-y-4">
+                 <div className="glass-card bg-amber-500/5 border-amber-500/20 p-4 mb-4">
+                   <p className="text-xs text-amber-500/80 leading-relaxed font-medium">Record exactly what you see on the shelves. This will be submitted as an <code className="bg-black/50 px-1 rounded text-primary">InventoryCountSubmitted</code> event to the NoSQL engine, triggering a zero-variance assertion or drift penalty.</p>
+                 </div>
+
+                 {countForm.map((item, idx) => (
+                    <div key={item.id} className="flex justify-between items-center p-4 border border-white/5 bg-white/[0.02] rounded-xl hover:border-white/10 transition-colors">
+                       <div>
+                          <p className="font-bold text-foreground">{item.name}</p>
+                          <p className="text-xs font-mono text-muted-foreground">{item.id} • Expected: {item.exp}</p>
+                       </div>
+                       <div className="flex items-center gap-3">
+                          <label className="text-xs text-muted-foreground font-mono">ACTUAL</label>
+                          <input 
+                            type="number"
+                            value={item.actual}
+                            onChange={(e) => {
+                               const arr = [...countForm];
+                               arr[idx].actual = parseFloat(e.target.value) || 0;
+                               setCountForm(arr);
+                            }}
+                            className="bg-black border border-white/10 rounded-lg w-24 px-3 py-2 text-right focus:ring-1 focus:ring-primary outline-none text-foreground font-bold"
+                          />
+                       </div>
+                    </div>
+                 ))}
+              </div>
+
+              <div className="pt-4 border-t border-white/5 mt-auto flex justify-end">
+                 <button 
+                  disabled={isSubmitting}
+                  onClick={handleSubmit} 
+                  className="bg-primary text-primary-foreground px-8 py-2.5 rounded-xl font-bold shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100 flex items-center justify-center min-w-[200px]"
+                 >
+                   {isSubmitting ? <div className="w-5 h-5 border-2 border-black border-t-transparent flex rounded-full animate-spin" /> : "Commit Physical Truth"}
+                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

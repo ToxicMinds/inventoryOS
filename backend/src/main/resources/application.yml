@@ -1,14 +1,12 @@
 spring:
   application:
     name: InventoryOS
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:inventoryos}
-    username: ${DB_USER:inventoryos}
-    password: ${DB_PASSWORD:inventoryos_dev}
-    driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
+  aws:
+    dynamodb:
+      endpoint: ${DYNAMODB_ENDPOINT:http://localhost:8000}
+      region: ${AWS_REGION:us-east-1}
+      access-key: ${AWS_ACCESS_KEY_ID:dummy-key}
+      secret-key: ${AWS_SECRET_ACCESS_KEY:dummy-secret}
   jackson:
     serialization:
       write-dates-as-timestamps: false
