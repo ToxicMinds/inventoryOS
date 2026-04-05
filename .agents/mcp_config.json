@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "inventory-os": {
+      "command": "node",
+      "args": ["-e", "console.log('MCP Server stub. Real implementation pending.')"],
+      "env": {
+        "API_URL": "http://localhost:8080/api"
+      }
+    }
+  }
+}

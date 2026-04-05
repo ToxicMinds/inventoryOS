@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>InventoryOS - Client Presentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/blood.min.css">
+  <style>
+    .reveal .slide-background {
+      background: radial-gradient(ellipse at top right, #3b2810, #09090b 50%);
+    }
+    .text-primary { color: #f59e0b !important; }
+    .text-green { color: #4ade80 !important; }
+    .text-sm { font-size: 0.6em !important; }
+    .glass-box {
+      background: rgba(24, 25, 32, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Title Slide -->
+      <section>
+        <span style="font-size: 3em; color: #f59e0b;">📦</span>
+        <h2>InventoryOS</h2>
+        <h4>Enterprise Restaurant Control Built for Scale</h4>
+        <p class="text-sm">Deterministic • Event-Sourced • Zero Vendor Lock-in</p>
+      </section>
+
+      <!-- The Problem -->
+      <section>
+        <section>
+          <h2>The Core Problem</h2>
+          <p>Traditional restaurant tech fails at scale because they rely on <em>mutable state</em>.</p>
+          <div class="glass-box">
+            "We lost 20 pounds of ground beef."<br/>
+            <span style="color: red; font-size: 0.7em;">Standard DB updates: UPDATE inventory = inventory - 20</span><br/>
+            <strong style="color: #f59e0b; font-size: 0.8em;">Without absolute auditability, trust breaks down.</strong>
+          </div>
+        </section>
+        <section>
+          <h2>The Solution: Event Sourcing</h2>
+          <p>InventoryOS works like a bank ledger.</p>
+          <ul class="text-sm" style="list-style-type: '⚡ ';">
+            <li>Never update a balance. Append an event.</li>
+            <li>Balances are theoretically deduced point-in-time state.</li>
+            <li>Complete temporal auditability built-in.</li>
+          </ul>
+        </section>
+      </section>
+
+      <!-- Technology & AWS -->
+      <section>
+        <h2 class="text-primary">Architecture Map</h2>
+        <p class="text-sm">Serverless deployment allows infinite scale with AWS Free Tier.</p>
+        <div class="glass-box" style="font-size: 0.6em; text-align: left;">
+          <strong>1. Storage:</strong> Single-Table DynamoDB (Zero structural drift)<br/>
+          <strong>2. Backend:</strong> Java 21 / Spring Boot (Deterministic engine)<br/>
+          <strong>3. Frontend:</strong> Next.js 14 Web / iOS / Android<br/>
+          <strong>4. Determinism:</strong> JVM BigDecimal Math (HALF_UP rounding)<br/>
+          <strong>5. Identifiers:</strong> UUIDv7 (Time-sortable causal tracing)
+        </div>
+      </section>
+
+      <!-- The Demo Flow -->
+      <section>
+        <h2>Live Demonstration</h2>
+        <p class="text-sm text-primary">Multi-location consolidated workflow</p>
+        <ol class="text-sm">
+          <li><strong>Greenfield:</strong> Bella Cucina (Downtown & Westside)</li>
+          <li><strong>Brownfield:</strong> The Brass Tap (Midtown & Riverside)</li>
+          <li>Sales Excel Imports &rightarrow; Consumption Deduced events</li>
+          <li>Location Transfers &rightarrow; Ledger synchronization</li>
+        </ol>
+      </section>
+
+      <!-- Closing -->
+      <section>
+        <h2>Why InventoryOS?</h2>
+        <div class="glass-box text-sm">
+          <p><span class="text-green">✓</span> Unbreakable math guarantees</p>
+          <p><span class="text-green">✓</span> True multi-location visibility</p>
+          <p><span class="text-green">✓</span> Built for 20 years of operations</p>
+          <p><span class="text-green">✓</span> Extensible via Hexagonal Architecture</p>
+        </div>
+        <br/>
+        <h3 class="text-primary">Ready for deployment.</h3>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      transition: 'zoom'
+    });
+  </script>
+</body>
+</html>
